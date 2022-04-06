@@ -1,0 +1,378 @@
+@use "./сolors.scss" as color;
+
+$heroBlockBackgroundColor: rgba(color.$brand_blue_500, 0.6);
+$heroBlockBackgroundOverlay: linear-gradient(0deg, $heroBlockBackgroundColor, $heroBlockBackgroundColor);
+$heroBlockImageUrl: "https://img.freepik.com/free-photo/expressing-brightful-true-emotions-positivity-young-pretty-woman-with-short-brunette-curly-hair-bed-surround-carton-boxes-modern-apartment-enjoying-moving-happiness-new-home_197531-2319.jpg?w=996&t=st=1648805046~exp=1648805646~hmac=cf470f75a1d4c7ea56b1ec36eb9a5189aa0157df2fedc30a868447273ef401d7";
+
+.heroBlock {
+    width: 100%;
+    height: calc(100vh - 80px);
+    padding: 0 100px;
+    background: $heroBlockBackgroundOverlay, url($heroBlockImageUrl);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    & > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        max-width: 800px;
+        color: color.$text_white;
+        text-align: center;
+        & > h1 {
+            font-size: 48px;
+            font-weight: 600;
+            max-width: 700px;
+            line-height: 115%;
+        }
+        & > h2 {
+            font-size: 28px;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        .searchBar {
+            $height: 80px;
+            $radius: $height / 2;
+            $padding: 30px;
+            $fontSize: 24px;
+
+            width: 100%;
+            height: $height;
+            margin-top: 32px;
+            border-radius: $radius;
+            display: grid;
+            grid-template-columns: 1fr max-content;
+            & > input {
+                width: 100%;
+                height: $height;
+                border-radius: $radius 0 0 $radius;
+                padding: 0 $padding;
+                font-size: $fontSize;
+            }
+            & > button {
+                height: $height;
+                border-radius: 0 $radius $radius 0;
+                padding: 0 $padding * 2;
+                font-size: $fontSize;
+                color: color.$text_white;
+                background-color: color.$brand_red_500;
+            }
+        }
+    }
+    .arrowDown {
+        $size: 50px;
+        position: absolute;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: center;
+        align-items: center;
+        width: $size;
+        height: $size;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 30px;
+        color: color.$text_white;
+        cursor: pointer;
+        animation: arrowDownAnimation 1s infinite ease-in alternate;
+        & > div {
+            width: 150px;
+            height: 30px;
+            padding: 10px 0;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            &::after {
+                content: "Прокрутить вниз";
+                position: absolute;
+                font-size: 18px;
+                top: 200%;
+                left: 50%;
+                width: 150px;
+                transform: translate(-50%, -50%);
+                transition: top 0.3s;
+            }
+        }
+        &:hover > div::after {
+            top: 50%;
+        }
+        @keyframes arrowDownAnimation {
+            from {
+                top: 90%;
+                opacity: 0.6;
+            }
+            to {
+                top: calc(90% + 10px);
+                opacity: 1;
+            }
+        }
+    }
+}
+.categories {
+    width: 100%;
+    padding: 64px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    .category {
+        flex: 1;
+        width: 100%;
+        min-width: 300px;
+        padding: 106px;
+        border-radius: 30px;
+        font-size: 24px;
+        font-weight: 600;
+        color: color.$text_white;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        h3 {
+            // width: 100%;
+            z-index: 3;
+        }
+        .overlay {
+            position: absolute;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .image {
+            position: absolute;
+            z-index: 1;
+            transition: transform 0.3s;
+        }
+        &:hover {
+            .image {
+                transform: scale(1.05);
+            }
+        }
+    }
+}
+.adventages {
+    width: 100%;
+    padding: 64px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .title {
+        font-size: 34px;
+        font-weight: 600;
+        color: color.$text_black_500;
+        margin-bottom: 48px;
+    }
+    .container {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+        grid-row-gap: 50px;
+        & > div {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            row-gap: 50px;
+            .item {
+                width: 300px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                & > div {
+                    width: 150px;
+                    height: 150px;
+                    border-radius: 75px;
+                    margin-bottom: 16px;
+                    background-color: color.$brand_blue_100;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                & > h3 {
+                    font-size: 20px;
+                    font-weight: 500;
+                    color: color.$text_black_500;
+                    margin-bottom: 8px;
+                }
+                & > p {
+                    font-size: 16px;
+                    color: color.$text_black_400;
+                }
+            }
+        }
+    }
+}
+.frequentRequests {
+    width: 100%;
+    padding-top: 64px;
+    .title {
+        font-size: 34px;
+        font-weight: 600;
+        color: color.$text_black_500;
+        margin-bottom: 48px;
+        text-align: center;
+    }
+    .container {
+        $widthCard: 313px;
+        $heightContainer: 280px;
+        $paddingContainer: 10px;
+        $widthContainer: $widthCard + $paddingContainer * 2;
+        $heightImage: 164px;
+        height: max-content;
+        overflow: hidden;
+        .item {
+            width: $widthContainer;
+            height: $heightContainer;
+            margin: 0 $paddingContainer 64px;
+            .link {
+                display: grid;
+                grid-template-rows: $heightImage 1fr;
+                width: $widthCard;
+                height: 100%;
+                border-radius: 30px;
+                overflow: hidden;
+                color: color.$text_black_500;
+                box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.25);
+                -webkit-user-drag: none;
+                .imageContainer {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    background-color: rgba(0, 0, 0, 0.2);
+                    .image {
+                        -webkit-user-drag: none;
+                        z-index: -1;
+                    }
+                }
+                .content {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    padding: 16px;
+                    & > h3 {
+                        font-size: 20px;
+                        font-weight: 500;
+                        max-height: 50%;
+                        overflow: hidden;
+                    }
+                    & > h4 {
+                        color: color.$text_black_400;
+                        text-align: end;
+                    }
+                }
+                &:hover {
+                    .content > h3 {
+                        color: color.$brand_red_500;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .heroBlock {
+        & > div {
+            max-width: 600px;
+            & > h1 {
+                font-size: 36px;
+            }
+            & > h2 {
+                font-size: 26px;
+            }
+            .searchBar {
+                $height: 60px;
+                $radius: $height / 2;
+                $padding: 20px;
+                $fontSize: 18px;
+
+                margin-top: 24px;
+                height: $height;
+                border-radius: $radius;
+                & > input {
+                    height: $height;
+                    border-radius: $radius 0 0 $radius;
+                    padding: 0 $padding;
+                    font-size: $fontSize;
+                }
+                & > button {
+                    height: $height;
+                    border-radius: 0 $radius $radius 0;
+                    padding: 0 $padding * 2;
+                    font-size: $fontSize;
+                    color: color.$text_white;
+                }
+            }
+        }
+        .arrowDown {
+            display: none;
+        }
+    }
+}
+@media screen and (max-width: 576px) {
+    .heroBlock {
+        height: 50vh;
+        padding: 0 40px;
+        & > div {
+            max-width: 600px;
+            & > h1 {
+                font-size: 24px;
+            }
+            & > h2 {
+                font-size: 18px;
+            }
+            .searchBar {
+                $height: 30px;
+                $radius: $height / 2;
+                $padding: 16px;
+                $fontSize: 14px;
+
+                margin-top: 16px;
+                height: $height;
+                border-radius: $radius;
+                & > input {
+                    height: $height;
+                    border-radius: $radius 0 0 $radius;
+                    padding: 0 $padding;
+                    font-size: $fontSize;
+                }
+                & > button {
+                    height: $height;
+                    border-radius: 0 $radius $radius 0;
+                    padding: 0 $padding * 2;
+                    font-size: $fontSize;
+                    color: color.$text_white;
+                }
+            }
+        }
+    }
+}
+@media screen and (max-width: 740px) {
+    .adventages {
+        .container {
+            grid-template-columns: 1fr;
+            justify-content: center;
+            align-items: center;
+            & > div {
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+        }
+    }
+}
