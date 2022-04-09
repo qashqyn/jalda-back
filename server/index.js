@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 
 import userRoutes from './routes/user.js';
+import postsRoutes from './routes/posts.js';
+import bookingsRoutes from './routes/bookings.js';
 
 const app = express();
 
@@ -12,6 +14,8 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true}));
 app.use(cors());
 
 app.use('/user', userRoutes);
+app.use('/posts', postsRoutes);
+app.use('/bookings', bookingsRoutes);
 
 app.get('/', (req, res) => {
     res.send("APP is running");

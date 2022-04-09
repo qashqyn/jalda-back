@@ -24,7 +24,7 @@ export const login = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-    const {email, password, firstname, lastname, tel, country, city, car} = req.body;
+    const {login, email, password, phoneNumber, birthDate} = req.body;
     
     try {
         const existingUser = await UserModal.findOne({email});
@@ -33,7 +33,7 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        const result = await UserModal.create({email, password: hashedPassword, firstname, lastname, tel, country, city, car});
+        const result = await UserModal.create({login, email, password: hashedPassword, phoneNumber, birthDate});
 
         const token = jwt.sign({email: result.email, id: result._id}, 'test', { expiresIn: "1h"});
         
@@ -44,3 +44,14 @@ export const signup = async (req, res) => {
         console.log(error);
     }
 };
+
+export const getFavorites = async (req, res) => {
+    try{
+        const user = await UserModal.findById(req.userId)
+            .populate({path: 'favorites'});
+
+        res.status(200).json(user.favorites);
+    }catch(error){
+        res.status(404).json(error);
+    }
+}
