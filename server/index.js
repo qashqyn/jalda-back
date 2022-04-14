@@ -6,6 +6,7 @@ import cors from 'cors';
 import userRoutes from './routes/user.js';
 import postsRoutes from './routes/posts.js';
 import bookingsRoutes from './routes/bookings.js';
+import categoryRoutes from './routes/category.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use('/user', userRoutes);
 app.use('/posts', postsRoutes);
 app.use('/bookings', bookingsRoutes);
+app.use('/categories', categoryRoutes);
 
 app.get('/', (req, res) => {
     res.send("APP is running");
