@@ -10,6 +10,24 @@ export const getMainCategories = async (req, res) => {
     }
 };
 
+export const getCategories = async (req, res) => {
+    try {
+        const categories = await Category.find({parent: null})
+            .populate({
+                path: 'subcategories',
+                model: 'Category',
+                populate: {
+                    path: 'subcategories',
+                    model: 'Category',
+                }
+            });
+
+        res.status(200).json(categories);
+    } catch (error) {
+        res.status(404).json(error);
+    }
+}
+
 export const getCategory = async (req, res) => {
     const { id } = req.params;
 
