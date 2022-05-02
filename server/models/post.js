@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 
 const postSchema = mongoose.Schema({
-    authorId: {type: mongoose.Schema.Types.ObjectId, ref: 'Landlord', required: true},
+    authorID: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     title: {type: String, required: true},
     images: [String ],
     category: {type: [String], required: true},
-    rating: {type: mongoose.Types.Decimal128, default: 0},
+    rating: {type: mongoose.Types.Decimal128, default: 0.0},
+    raters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     description: {type: String, required: true},
-    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}],
+    reviews: [{type: mongoose.Schema.Types.ObjectId, ref: 'Review'}],
     price: {type: Number, default: 0},
     address: String,
     area: {type: Number, default: 0},
@@ -16,7 +17,7 @@ const postSchema = mongoose.Schema({
             type: Number, min: 0,
             validate: {
                 validator: function(val){
-                    const currMax = this.target.capacity.range.max;
+                    const currMax = this.max;
                     return (currMax !== undefined ? val <= currMax : true);
                 },
                 message: "The MIN range with value {VALUE} must be <= than the max range!"
@@ -26,7 +27,7 @@ const postSchema = mongoose.Schema({
             type: Number, min: 0,
             validate: {
                 validator: function(val) {
-                    const currMin = this.target.capacity.range.min;
+                    const currMin = this.min;
                     return (currMin !== undefined ? val >= currMin : true);
                 },
                 message: "The MAX range with value {VALUE} must be >= than the min range!"
@@ -36,7 +37,11 @@ const postSchema = mongoose.Schema({
     takeaway_food: {type: Boolean, default: false},
     sex: String,
     size: String,
-    color: String
+    color: String,
+    postDate: {
+        type: Date,
+        default: new Date()
+    }
 });
-
+postSchema.index({'$**': 'text'});
 export default mongoose.model('Post', postSchema);

@@ -1,13 +1,38 @@
 import mongoose from "mongoose";
+import category from "../models/category.js";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 
 export const getPosts = async (req, res) => {
+    const { category, search, page: pg } = req.query;
     try{
-        const posts = await Post.find();
+        let page = 1;
+        if(pg)
+            page = pg;
+        const LIMIT = 6;
+        const startIndex = (Number(page) - 1) * LIMIT;
+        const total = await Post.countDocuments({});
 
-        res.status(200).json(posts);
+        var query;
+        if(!category && !search){
+            query = await Post.find().select('authorID title images rating description postData').populate('authorID').sort('-postDate').limit(LIMIT).skip(startIndex);
+        }else if(category && !search){
+            query = await Post.find().where('category').in(category.split(',')).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+        }else if(!category && search){
+            query = await Post.find({$text: {$search: search}}).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+        }else{
+            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+        }
+        let arr = query.map((post) => {
+            if(post.images)
+                return {...post._doc, postID: post._doc._id, image: post.images[0], images: null};
+            else
+                return {...post._doc, postID: post._doc._id, image: null};    
+        });
+        
+        res.status(200).json({data: arr, currentPage:Number(page), numberOfPages: Math.ceil(total / LIMIT)});
     }catch(error){
+        console.log(error);
         res.status(404).json(error);
     }
 };
@@ -16,11 +41,12 @@ export const getPost = async (req, res) => {
     const { id } = req.params;
 
     try{
-        const post = await Post.findById(id)
-            .populate({
-                path: 'comment',
-                populate: { path: 'userId'}
-            });
+        const post = await Post.findById(id);
+        post.populate({
+            path: 'review',
+            strictPopulate: false,
+            populate: 'userID'
+        })
         res.status(200).json(post);
     }catch(error){
         res.status(404).json(error);
