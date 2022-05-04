@@ -9,7 +9,7 @@ const postSchema = mongoose.Schema({
     raters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     description: {type: String, required: true},
     reviews: [{type: mongoose.Schema.Types.ObjectId, ref: 'Review'}],
-    price: {type: Number, default: 0},
+    price: {type: Number, default: 0, required: true},
     address: String,
     area: {type: Number, default: 0},
     capacity: {
