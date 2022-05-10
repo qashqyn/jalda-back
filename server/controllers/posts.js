@@ -15,13 +15,13 @@ export const getPosts = async (req, res) => {
 
         var query;
         if(!category && !search){
-            query = await Post.find().select('authorID title images rating description postData').populate('authorID').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find().select('authorID title images rating description postData').populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).sort('-postDate').limit(LIMIT).skip(startIndex);
         }else if(category && !search){
-            query = await Post.find().where('category').in(category.split(',')).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
         }else if(!category && search){
-            query = await Post.find({$text: {$search: search}}).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
         }else{
-            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate('authorID').select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
         }
         let arr = query.map((post) => {
             if(post.images)

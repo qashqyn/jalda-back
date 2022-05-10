@@ -10,34 +10,11 @@ const postSchema = mongoose.Schema({
     description: {type: String, required: true},
     reviews: [{type: mongoose.Schema.Types.ObjectId, ref: 'Review'}],
     price: {type: Number, default: 0, required: true},
-    address: String,
-    area: {type: Number, default: 0},
-    capacity: {
-        min: { 
-            type: Number, min: 0,
-            validate: {
-                validator: function(val){
-                    const currMax = this.max;
-                    return (currMax !== undefined ? val <= currMax : true);
-                },
-                message: "The MIN range with value {VALUE} must be <= than the max range!"
-            }
-        },
-        max: { 
-            type: Number, min: 0,
-            validate: {
-                validator: function(val) {
-                    const currMin = this.min;
-                    return (currMin !== undefined ? val >= currMin : true);
-                },
-                message: "The MAX range with value {VALUE} must be >= than the min range!"
-            }
-        }
-    },
-    takeaway_food: {type: Boolean, default: false},
-    sex: String,
-    size: String,
-    color: String,
+    fields: [{
+        isNecessary: {type: Boolean, default: false},
+        name: {type: String, required: true},
+        info: {type: String},
+    }],
     postDate: {
         type: Date,
         default: new Date()

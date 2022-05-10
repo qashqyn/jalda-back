@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
-    name: {type: String, unique : true, required: true},
+    name: {type: String, required: true},
     email: {type: String, unique : true, required: true},
     phoneNumber: {type: String},
     telegram: {type: String, default: null},
@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
         ref: 'Role',
     }],
     image: {type: String, default: null},
+    crediCard: {type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard', unique: true}
 
 });
 

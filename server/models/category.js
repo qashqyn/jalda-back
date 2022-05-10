@@ -6,7 +6,7 @@ const categorySchema = mongoose.Schema({
     subcategories: [{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}],
     parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null},
     necessaryFields: {type: [String], default: ["price", "address"]},
-    previewImage: {type: String, default: null}
+    previewUrl: {type: String, default: null}
 });
 
 export default mongoose.model('Category', categorySchema);
