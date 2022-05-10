@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 
 import UserModal from "../models/user.js";
+import RoleModal from '../models/roles.js';
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -33,7 +34,18 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        const result = await UserModal.create({...req.body, password: hashedPassword});
+        let userRoles = [];
+
+        const userRole = await RoleModal.findOne().where('name').equals('User');
+        userRoles.push(userRole._id);
+
+        if(req.body.iinNumber){
+            const authorRole = await RoleModal.findOne().where('name').equals('Author');
+            userRoles.push(authorRole._id);
+        }
+
+
+        const result = await UserModal.create({...req.body, password: hashedPassword, roles: userRoles});
 
         const token = jwt.sign({email: result.email, id: result._id}, 'test', { expiresIn: "1h"});
         

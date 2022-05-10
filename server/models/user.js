@@ -6,9 +6,11 @@ const userSchema = mongoose.Schema({
     phoneNumber: {type: String},
     telegram: {type: String, default: null},
     whatsapp: {type: String, default: null},
-    birthDate: { type: Date, required: true},
+    birthDate: { type: Date},
     password: {type: String, required: true},
     favorites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Post'}],
+    companyName: String,
+    iinNumber: {type: String, unique: true},
     roles: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
