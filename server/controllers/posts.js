@@ -4,7 +4,7 @@ import Post from "../models/post.js";
 import User from "../models/user.js";
 
 export const getPosts = async (req, res) => {
-    const { category, search, page: pg } = req.query;
+    const { category, search, page: pg, sort } = req.query;
     try{
         let page = 1;
         if(pg)
@@ -13,15 +13,33 @@ export const getPosts = async (req, res) => {
         const startIndex = (Number(page) - 1) * LIMIT;
         const total = await Post.countDocuments({});
 
+        const sorting = '-postDate';
+    
+        if(sort)
+            switch(sort){
+                case 'rating':
+                    sorting = '-rating';
+                    break;
+                case 'priceInc':
+                    sorting = 'price';
+                    break;
+                case 'priceDec':
+                    sorting = '-price';
+                    break;
+                default:
+                    sorting = '-postDate';
+            }
+
+
         var query;
         if(!category && !search){
-            query = await Post.find().select('authorID title images rating description postData').populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find().select('authorID title images rating description postData').populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(category && !search){
-            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(!category && search){
-            query = await Post.find({$text: {$search: search}}).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
         }else{
-            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort('-postDate').limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
         }
         let arr = query.map((post) => {
             if(post.images)
