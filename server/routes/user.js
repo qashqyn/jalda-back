@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/login', login);
 router.post('/signup', signup);
-router.patch('/', editUser);
+router.patch('/', auth, editUser);
 router.get('/', auth, getUsers);
 
 router.get('/favorites', auth, getFavorites);
