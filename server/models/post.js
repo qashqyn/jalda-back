@@ -5,7 +5,7 @@ const postSchema = mongoose.Schema({
     title: {type: String, required: true},
     images: [String ],
     category: {type: [String], required: true},
-    rating: {type: mongoose.Types.Decimal128, default: 0.0},
+    rating: {type: Number, default: 0},
     raters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     description: {type: String, required: true},
     reviews: [{type: mongoose.Schema.Types.ObjectId, ref: 'Review'}],

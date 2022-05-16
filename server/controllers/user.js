@@ -60,7 +60,7 @@ export const signup = async (req, res) => {
 export const getFavorites = async (req, res) => {
     try{
         const user = await UserModal.findById(req.userId)
-            .populate({path: 'favorites'});
+            .populate({path: 'favorites', select: 'authorID title images rating description postData'});
 
         res.status(200).json(user.favorites);
     }catch(error){

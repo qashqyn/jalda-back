@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import category from "../models/category.js";
 import Post from "../models/post.js";
+import Review from "../models/review.js";
+import user from "../models/user.js";
 import User from "../models/user.js";
 
 export const getPosts = async (req, res) => {
@@ -59,12 +61,11 @@ export const getPost = async (req, res) => {
     const { id } = req.params;
 
     try{
-        const post = await Post.findById(id);
-        post.populate({
-            path: 'review',
+        const post = await Post.findById(id).populate({
+            path: 'reviews',
             strictPopulate: false,
             populate: 'userID'
-        })
+        });
         res.status(200).json(post);
     }catch(error){
         res.status(404).json(error);
@@ -117,15 +118,66 @@ export const favPost = async (req, res) => {
     
     const user = await User.findById(req.userId);
 
-    const index = user.favorites.findIndex((postId) => postId === String(id));
+    const index = user.favorites.findIndex((postId) => String(postId) == String(id));
 
     if(index === -1){
         user.favorites.push(id);
     }else{
-        user.favorites = user.favorites.filter((postId) => postId !== String(id));
+        user.favorites = user.favorites.filter((postId) => String(postId) != String(id));
     }
 
     const updatedUser = await User.findByIdAndUpdate(req.userId, user, {new: true});
 
     res.json(updatedUser);
+}
+
+export const addReview = async (req, res) => {
+    const { id } = req.params; 
+    const { rating, text } = req.body;
+    if(!req.userId) return res.json({message: "Unaithenticated"});
+    
+    const userID = req.userId;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        console.log("No post with that ID");
+        return res.status(404).send("No post with that ID");
+    }
+
+    try {
+        const post = await Post.findById(id).populate('reviews');
+        
+        const index = post.raters.findIndex((user) => String(user) == String(userID));
+
+        if(index === -1){
+            const review = new Review({rating: rating, text: text, postID: id, userID: userID});
+            await review.save();
+            post.reviews.push(review._id);
+            post.raters.push(userID);
+
+            let rat = 0;
+            let cnt = 0;
+
+            post.reviews.map((r) => {rat += r.rating; cnt++});
+            const newRating = Math.round(rat / cnt);
+            post.rating = newRating;
+            
+            console.log(rat+ " " + cnt + " " + newRating);
+
+            const updatedPost = await Post.findByIdAndUpdate(post._id, post, {new: true}).populate({
+                path: 'reviews',
+                strictPopulate: false,
+                populate: {
+                    path: 'userID',
+                    select: 'name surname image'
+                }
+            });
+            
+            res.status(201).json(updatedPost);
+        }else{
+            res.status(201).json(post);
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(409).json(error);
+    }
 }
