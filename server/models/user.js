@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
         ref: 'Role',
     }],
     image: {type: String, default: null},
-    crediCard: {type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard', unique: true}
+    crediCard: [{type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard'}]
 
 });
 

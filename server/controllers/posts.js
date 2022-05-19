@@ -61,10 +61,16 @@ export const getPost = async (req, res) => {
     const { id } = req.params;
 
     try{
-        const post = await Post.findById(id).populate({
+        const post = await Post.findById(id).select('-raters').populate({
             path: 'reviews',
             strictPopulate: false,
-            populate: 'userID'
+            populate: {
+                path: 'userID',
+                select: 'name surname fullname image'
+            }
+        }).populate({
+            path: 'authorID',
+            select: 'name image phoneNumber telegram whatsapp'
         });
         res.status(200).json(post);
     }catch(error){

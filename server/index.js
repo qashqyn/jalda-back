@@ -9,6 +9,7 @@ import bookingsRoutes from './routes/bookings.js';
 import categoryRoutes from './routes/category.js';
 import frequentRequestsRoutes from './routes/frequentRequests.js';
 import rolesRouter from './routes/roles.js';
+import faqRouter from './routes/faq.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/bookings', bookingsRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/frequentRequests', frequentRequestsRoutes);
 app.use('/roles', rolesRouter);
+app.use('/faqs', faqRouter);
 
 app.get('/', (req, res) => {
     res.send("APP is running");
