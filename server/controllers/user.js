@@ -95,3 +95,28 @@ export const editUser = async (req, res) => {
         console.log(error);
     }
 }
+
+export const changePassword = async (req, res) => {
+    const {password, newPassword} = req.body;
+    try {
+        if(!req.userId) return res.json({message: "Unaithenticated"});
+        const _id = req.userId;
+
+        const existingUser = await UserModal.findById(_id);
+
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+        if(!isPasswordCorrect)
+            res.status(400).json({message: "Invalid credentials"});
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        const result = await UserModal.findByIdAndUpdate(_id, {password: hashedPassword}, {new: true});
+
+        const token = jwt.sign({email: result.email, id: result._id}, 'test', { expiresIn: "1h"});
+        res.json({ result, token});
+    } catch (error) {
+        res.status(500).json({message: "Something went wrong."});
+
+        console.log(error);
+    }
+}
