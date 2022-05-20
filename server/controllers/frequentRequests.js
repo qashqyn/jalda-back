@@ -41,7 +41,7 @@ export const updateFrequentRequest = async (req, res) => {
     const frequentRequest = req.body;
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No frequentRequest with that ID");
+        return res.status(404).send("No frequentRequest with that Id");
 
     const updatedfrequentRequest = await FrequentRequests.findByIdAndUpdate(id, { ...frequentRequest, id}, {new: true});
 
@@ -52,7 +52,7 @@ export const deleteFrequentRequest = async (req, res) => {
     const { id } = req.params;
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No frequentRequest with that ID");
+        return res.status(404).send("No frequentRequest with that Id");
 
     await FrequentRequests.findByIdAndRemove(id);
 

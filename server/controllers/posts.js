@@ -33,19 +33,19 @@ export const getPosts = async (req, res) => {
 
         var query;
         if(!category && !search){
-            query = await Post.find().select('authorID title images rating description postData').populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find().select('authorId title images rating description postDate').populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(category && !search){
-            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description postDate').sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(!category && search){
-            query = await Post.find({$text: {$search: search}}).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description postDate').sort(sorting).limit(LIMIT).skip(startIndex);
         }else{
-            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorID', select: 'name image phoneNumber telegram whatsapp'}).select('authorID title images rating description postData').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description postDate').sort(sorting).limit(LIMIT).skip(startIndex);
         }
         let arr = query.map((post) => {
             if(post.images)
-                return {...post._doc, postID: post._doc._id, image: post.images[0], images: null};
+                return {...post._doc, postId: post._doc._id, image: post.images[0], images: null};
             else
-                return {...post._doc, postID: post._doc._id, image: null};    
+                return {...post._doc, postId: post._doc._id, image: null};    
         });
         
         res.status(200).json({data: arr, currentPage:Number(page), numberOfPages: Math.ceil(total / LIMIT)});
@@ -63,11 +63,11 @@ export const getPost = async (req, res) => {
             path: 'reviews',
             strictPopulate: false,
             populate: {
-                path: 'userID',
+                path: 'userId',
                 select: 'name surname fullname image'
             }
         }).populate({
-            path: 'authorID',
+            path: 'authorId',
             select: 'name image phoneNumber telegram whatsapp'
         });
         res.status(200).json(post);
@@ -77,8 +77,8 @@ export const getPost = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-    const postData = req.body;
-    const post = new Post(postData);
+    const postDate = req.body;
+    const post = new Post(postDate);
 
     try {
         await post.save();
@@ -94,7 +94,7 @@ export const updatePost = async (req, res) => {
     const post = req.body;
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No post with that ID");
+        return res.status(404).send("No post with that Id");
 
     const updatedPost = await Post.findByIdAndUpdate(id, { ...post, id}, {new: true});
 
@@ -105,7 +105,7 @@ export const deletePost = async (req, res) => {
     const { id } = req.params;
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No post with that ID");
+        return res.status(404).send("No post with that Id");
     
     await Post.findByIdAndRemove(id);
 
@@ -115,10 +115,10 @@ export const deletePost = async (req, res) => {
 export const favPost = async (req, res) => {
     const { id } = req.params;
 
-    if(!req.userId) return res.json({message: "Unaithenticated"});
+    if(!req.userId) return res.json({message: "Unauthenticated"});
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No post with that ID");
+        return res.status(404).send("No post with that Id");
     
     const user = await User.findById(req.userId);
 
@@ -138,25 +138,25 @@ export const favPost = async (req, res) => {
 export const addReview = async (req, res) => {
     const { id } = req.params; 
     const { rating, text } = req.body;
-    if(!req.userId) return res.json({message: "Unaithenticated"});
+    if(!req.userId) return res.json({message: "Unauthenticated"});
     
-    const userID = req.userId;
+    const userId = req.userId;
 
     if(!mongoose.Types.ObjectId.isValid(id)){
-        console.log("No post with that ID");
-        return res.status(404).send("No post with that ID");
+        console.log("No post with that Id");
+        return res.status(404).send("No post with that Id");
     }
 
     try {
         const post = await Post.findById(id).populate('reviews');
         
-        const index = post.raters.findIndex((user) => String(user) == String(userID));
+        const index = post.raters.findIndex((user) => String(user) == String(userId));
 
         if(index === -1){
-            const review = new Review({rating: rating, text: text, postID: id, userID: userID});
+            const review = new Review({rating: rating, text: text, postId: id, userId: userId});
             await review.save();
             post.reviews.push(review._id);
-            post.raters.push(userID);
+            post.raters.push(userId);
 
             let rat = 0;
             let cnt = 0;
@@ -171,7 +171,7 @@ export const addReview = async (req, res) => {
                 path: 'reviews',
                 strictPopulate: false,
                 populate: {
-                    path: 'userID',
+                    path: 'userId',
                     select: 'name surname image'
                 }
             });

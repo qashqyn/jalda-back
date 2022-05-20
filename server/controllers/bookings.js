@@ -29,7 +29,7 @@ export const getBooking = async (req, res) => {
 export const createBooking = async (req, res) => {
     const bookingData = req.body;
 
-    if(!req.userId) return res.json({message: "Unaithenticated"});
+    if(!req.userId) return res.json({message: "Unauthenticated"});
     
     const booking = new Booking({...bookingData, userId: req.userId});
 
@@ -47,7 +47,7 @@ export const updateBooking = async (req, res) => {
     const booking = req.body;
 
     if(!mongoose.Types.ObjectId.isValid(id))
-        return res.status(404).send("No booking with that ID");
+        return res.status(404).send("No booking with that Id");
 
     const updatedBooking = await Booking.findByIdAndUpdate(id, { ...booking, id}, {new: true});
 
