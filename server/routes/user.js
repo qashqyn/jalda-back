@@ -1,12 +1,14 @@
 import express from 'express';
 
-import { signup, login, getFavorites, getUsers, editUser, changePassword, upgradeToAuthor } from '../controllers/user.js';
+import { signup, login, getFavorites, getUsers, editUser, changePassword, upgradeToAuthor, signupAuthor } from '../controllers/user.js';
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
 router.post('/login', login);
 router.post('/signup', signup);
+router.post('/signup_author', signupAuthor);
+
 router.post('/upgrade_to_author', auth, upgradeToAuthor);
 router.patch('/', auth, editUser);
 router.get('/', auth, getUsers);
