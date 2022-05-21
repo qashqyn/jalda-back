@@ -44,9 +44,11 @@ export const signup = async (req, res) => {
             userRoles.push(authorRole._id);
         }
 
+        const newUser = new UserModel({...req.body, password: hashedPassword, roles: userRoles});
+        await newUser.save();
 
-        const result = await UserModel.create({...req.body, password: hashedPassword, roles: userRoles}).populate('roles');
-
+        const result = await UserModel.findById(newUser._id).populate('roles');
+        
         const token = jwt.sign({email: result.email, id: result._id}, 'jalda', { expiresIn: "1h"});
         
         res.status(201).json({result, token});
@@ -56,6 +58,34 @@ export const signup = async (req, res) => {
         console.log(error);
     }
 };
+
+export const upgradeToAuthor = async (req, res) => {
+    const data = req.body;
+
+    try {
+        if(!req.userId) return res.json({message: "Unauthenticated"});
+        const _id = req.userId;
+
+        const user = await UserModel.findById(_id);
+
+        const authorRole = await RoleModel.findOne().where('name').equals('Author');
+        user.roles.push(authorRole._id);
+
+        const result = await UserModel.findByIdAndUpdate(_id, { ...data, roles: user.roles, _id}, {new: true});
+        
+        const token = jwt.sign({email: result.email, id: result._id}, 'jalda', { expiresIn: "1h"});
+        
+        res.json({ result, token});
+    } catch (error) {
+        res.status(500).json({message: "Something went wrong."});
+
+        console.log(error);
+    }
+}
+
+export const addCreditCard = async (req, res) => {
+    
+}
 
 export const getFavorites = async (req, res) => {
     try{
@@ -90,9 +120,8 @@ export const editUser = async (req, res) => {
         
         res.json({ result, token});
     } catch (error) {
-        res.status(500).json({message: "Something went wrong."});
-
         console.log(error);
+        res.status(500).json({message: "Something went wrong."});
     }
 }
 

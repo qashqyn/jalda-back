@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const userSchema = mongoose.Schema({
     name: {type: String, required: true},
     surname: {type: String},
+    fathername: {type: String},
     email: {type: String, unique : true, required: true},
     phoneNumber: {type: String},
     telegram: {type: String, default: null},
