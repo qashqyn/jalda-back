@@ -162,7 +162,10 @@ export const addReview = async (req, res) => {
             let cnt = 0;
 
             post.reviews.map((r) => {rat += r.rating; cnt++});
-            const newRating = Math.round(rat / cnt);
+            let newRating = post.rating;
+            newRating[review.rating]++;
+            newRating.total++;
+            newRating.avg = (5*newRating[5] + 4*newRating[4] + 3*newRating[3] + 2*newRating[2] + newRating[1]) / total;
             post.rating = newRating;
             
             console.log(rat+ " " + cnt + " " + newRating);

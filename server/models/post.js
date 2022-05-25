@@ -6,11 +6,13 @@ const postSchema = mongoose.Schema({
     images: [String ],
     category: {type: [String], required: true},
     rating: {
-        rate_1: Number,
-        rate_2: Number,
-        rate_3: Number,
-        rate_4: Number,
-        rate_5: Number
+        1: Number,
+        2: Number,
+        3: Number,
+        4: Number,
+        5: Number,
+        avg: Number,
+        total: Number
     },
     raters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     description: {type: String, required: true},

@@ -58,7 +58,7 @@ export const approveAuthor = async (req, res) => {
         }else if(newStatus === 'dismissed'){
             text = "Вашу заявку отклонили.";
         }else{
-            return res.status(404).send("New status not given.");
+            return res.status(400).send("New status not given.");
         }
 
         
