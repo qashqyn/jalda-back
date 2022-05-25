@@ -71,7 +71,7 @@ export const signupAuthor = async (req, res) => {
 
 
 
-        const newUser = new UserModel({...req.body, roles: userRoles, status: "waiting"});
+        const newUser = new UserModel({...req.body, roles: userRoles, status: "waiting", sendDate: new Date()});
 
         await newUser.save();
 
@@ -94,7 +94,7 @@ export const upgradeToAuthor = async (req, res) => {
         const authorRole = await RoleModel.findOne().where('name').equals('Author');
         user.roles.push(authorRole._id);
 
-        const result = await UserModel.findByIdAndUpdate(_id, { ...data, roles: user.roles, _id}, {new: true}).populate('roles');
+        const result = await UserModel.findByIdAndUpdate(_id, { ...data, roles: user.roles, sendDate: new Date()}, {new: true}).populate('roles');
         
         const token = jwt.sign({email: result.email, id: result._id}, 'jalda', { expiresIn: "1h"});
         

@@ -11,7 +11,7 @@ export const getWaitingAuthors = async (req, res) => {
         // if(!req.isAdmin || req.isAdmin !== true)
         //     return res.status(403).json({message: "Not an Admin"});
 
-        const waitingAuthors = await UserModel.find({"status": "waiting"});
+        const waitingAuthors = await UserModel.find({"status": "waiting"}).select('companyName name surname fathername iinNumber email phoneNumber sendDate').sort('sendDate');
 
         res.status(200).json(waitingAuthors);
 

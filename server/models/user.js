@@ -19,7 +19,8 @@ const userSchema = mongoose.Schema({
     }],
     status: {type: String, default: null},
     image: {type: String, default: null},
-    creditCards: [{type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard'}]
+    creditCards: [{type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard'}],
+    sendDate: Date,
 });
 
 export default mongoose.model('User', userSchema);
