@@ -33,13 +33,13 @@ export const getPosts = async (req, res) => {
 
         var query;
         if(!category && !search){
-            query = await Post.find().select('authorId title images rating description price fields').populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find().select('author title images rating description price fields').populate({path: 'author', select: 'name image phoneNumber telegram whatsapp'}).sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(category && !search){
-            query = await Post.find().where('category').in(category.split(',')).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find().where('category').in(category.split(',')).populate({path: 'author', select: 'name image phoneNumber telegram whatsapp'}).select('author title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
         }else if(!category && search){
-            query = await Post.find({$text: {$search: search}}).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).populate({path: 'author', select: 'name image phoneNumber telegram whatsapp'}).select('author title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
         }else{
-            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'authorId', select: 'name image phoneNumber telegram whatsapp'}).select('authorId title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
+            query = await Post.find({$text: {$search: search}}).where('category').in(category.split(',')).populate({path: 'author', select: 'name image phoneNumber telegram whatsapp'}).select('author title images rating description price fields').sort(sorting).limit(LIMIT).skip(startIndex);
         }
         let arr = query.map((post) => {
             if(post.images)
@@ -67,8 +67,8 @@ export const getPost = async (req, res) => {
                 select: 'name surname fullname image'
             }
         }).populate({
-            path: 'authorId',
-            select: 'name image phoneNumber telegram whatsapp'
+            path: 'author',
+            select: 'companyName image phoneNumber telegram whatsapp'
         });
         res.status(200).json(post);
     }catch(error){
@@ -77,8 +77,8 @@ export const getPost = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-    const postDate = req.body;
-    const post = new Post(postDate);
+    const data = req.body;
+    const post = new Post(data);
 
     try {
         await post.save();

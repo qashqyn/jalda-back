@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import nodemailer from 'nodemailer';
-import generator from 'generate-password';
 
 import UserModel from "../models/user.js";
 import RoleModel from '../models/roles.js';
@@ -57,7 +56,7 @@ export const signup = async (req, res) => {
 };
 
 export const signupAuthor = async (req, res) => {
-    const { email } = req.body;
+    const { email, iinNumber, companyName } = req.body;
 
     try {
         const existingUser = await UserModel.findOne({email});
@@ -68,41 +67,15 @@ export const signupAuthor = async (req, res) => {
         
 
         const userRole = await RoleModel.findOne().where('name').equals('User');
-        const authorRole = await RoleModel.findOne().where('name').equals('Author');
-        userRoles.push(userRole._id, authorRole._id);
+        userRoles.push(userRole._id);
 
-        const password = generator.generate({length: 10, numbers: true});
-        const hashedPassword = await bcrypt.hash(password, 12);
 
-        const newUser = new UserModel({...req.body, password: hashedPassword, roles: userRoles});
 
-        const transporter = nodemailer.createTransport({
-            port: 465,   
-            host: "smtp.gmail.com",
-            auth: {
-              user: 'jalda.platform@gmail.com',
-              pass: 'jalda2022'
-            },
-            secure: true,
-        });
-
-        var mailOptions = {
-            from: 'jalda.platform@gmail.com',
-            to: email,
-            subject: 'Регистрация партнера на платформе Jalda',
-            text: `Ваш пароль: ${password}`
-        };
-          
+        const newUser = new UserModel({...req.body, roles: userRoles, status: "waiting"});
 
         await newUser.save();
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-                res.status(400).json({message: "Error"});
-            }
-            console.log('Email sent: ' + info.response);
-            res.status(201).json({message: "Success"});;
-        });
 
+        res.status(201).json({message: "Success"});;
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "Something went wrong."});   
@@ -137,7 +110,7 @@ export const upgradeToAuthor = async (req, res) => {
 export const getFavorites = async (req, res) => {
     try{
         const user = await UserModel.findById(req.userId)
-            .populate({path: 'favorites', select: 'authorId title images rating description postDate'});
+            .populate({path: 'favorites', select: 'author title images rating description postDate'});
 
         res.status(200).json(user.favorites);
     }catch(error){
