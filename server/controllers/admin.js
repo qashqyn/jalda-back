@@ -1,5 +1,7 @@
 import UserModel from "../models/user.js";
 import RoleModel from '../models/roles.js';
+import Post from "../models/post.js";
+
 import nodemailer from 'nodemailer';
 import mongoose from "mongoose";
 import generator from 'generate-password';
@@ -8,8 +10,8 @@ import bcrypt from 'bcryptjs';
 
 export const getWaitingAuthors = async (req, res) => {
     try {
-        // if(!req.isAdmin || req.isAdmin !== true)
-        //     return res.status(403).json({message: "Not an Admin"});
+        if(!req.isAdmin || req.isAdmin !== true)
+            return res.status(403).json({message: "Not an Admin"});
 
         const waitingAuthors = await UserModel.find({"status": "waiting"}).select('companyName name surname fathername iinNumber email phoneNumber sendDate').sort('sendDate');
 
@@ -26,8 +28,8 @@ export const approveAuthor = async (req, res) => {
     const { newStatus } = req.body;
 
     try {
-        // if(!req.isAdmin || req.isAdmin !== true)
-        //     return res.status(403).json({message: "Not an Admin"});
+        if(!req.isAdmin || req.isAdmin !== true)
+            return res.status(403).json({message: "Not an Admin"});
 
         if(!mongoose.Types.ObjectId.isValid(id)){
             console.log("No user with that Id");
@@ -90,4 +92,43 @@ export const approveAuthor = async (req, res) => {
         console.log(error);
         res.status(500).json(error);
     }
+}
+
+
+// Custom APIs
+export const deleteUsers = async (req, res) => {
+    const users = req.body;
+    try {
+        if(!req.isAdmin || req.isAdmin !== true)
+            return res.status(403).json({message: "Not an Admin"});
+
+        for (let index = 0; index < users.length; index++) {
+            const user = users[index];
+            await UserModel.findByIdAndDelete(user);
+        }
+
+        return res.status(201).json({message: "Success"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+
+}
+export const deletePosts = async (req, res) => {
+    const posts = req.body;
+    try {
+        if(!req.isAdmin || req.isAdmin !== true)
+            return res.status(403).json({message: "Not an Admin"});
+
+        for (let index = 0; index < posts.length; index++) {
+            const post = posts[index];
+            await Post.findByIdAndDelete(user);
+        }
+
+        return res.status(201).json({message: "Success"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+
 }
