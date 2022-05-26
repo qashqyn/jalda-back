@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import nodemailer from 'nodemailer';
+import generator from 'generate-password';
+
 
 import UserModel from "../models/user.js";
 import RoleModel from '../models/roles.js';
@@ -68,8 +70,6 @@ export const signupAuthor = async (req, res) => {
 
         const userRole = await RoleModel.findOne().where('name').equals('User');
         userRoles.push(userRole._id);
-
-
 
         const newUser = new UserModel({...req.body, roles: userRoles, status: "waiting", sendDate: new Date()});
 
@@ -164,8 +164,49 @@ export const changePassword = async (req, res) => {
         const token = jwt.sign({email: result.email, id: result._id}, 'jalda', { expiresIn: "1h"});
         res.json({ result, token});
     } catch (error) {
-        res.status(500).json({message: "Something went wrong."});
-
         console.log(error);
+        return res.status(500).json({message: "Something went wrong."});
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    const {email} = req.body;
+    try {
+        const user = await UserModel.findOne({email: email});
+        if(!user)
+            return res.status(404).json({message: "User does not exist."});
+        const password = generator.generate({length: 8, numbers: true});
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await UserModel.findByIdAndUpdate(user._id, {password: hashedPassword});
+
+        const transporter = nodemailer.createTransport({
+            port: 465,   
+            host: "smtp.gmail.com",
+            auth: {
+              user: 'jalda.platform@gmail.com',
+              pass: 'jalda2022'
+            },
+            secure: true,
+        });
+
+        var mailOptions = {
+            from: 'jalda.platform@gmail.com',
+            to: user.email,
+            subject: 'Востановление паролья',
+            text: `Ваш новый пароль: ${password}`
+        };
+          
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                res.status(400).json({message: "Error"});
+            }
+            console.log('Email sent: ' + info.response);
+            return res.status(201).json({message: "Success"});
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Something went wrong."});
     }
 }
